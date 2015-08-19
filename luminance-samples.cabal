@@ -36,19 +36,20 @@ executable HelloWorld
 
   default-language:    Haskell2010
 
--- executable HelloWorld-Uniform
---   main-is:             HelloWorldUniform.hs
--- 
---   other-extensions:    DataKinds
---                      , FlexibleContexts
--- 
---   build-depends:       base         >= 4.8 && < 4.9
---                      , luminance    >= 0.1 && < 0.2
---                      , GLFW-b       >= 1.4 && < 1.5
---                      , mtl          >= 2.2 && < 2.3
---                      , resourcet    >= 1.1 && < 1.2
---                      , transformers >= 0.4 && < 0.5
--- 
---   hs-source-dirs:      src
--- 
---   default-language:    Haskell2010
+executable HelloWorldUniform
+  main-is:             HelloWorldUniform.hs
+
+  default-extensions:  DataKinds
+                     , FlexibleContexts
+                     , ScopedTypeVariables
+
+  build-depends:       base         >= 4.8 && < 4.9
+                     , luminance    >= 0.1 && < 0.2
+                     , GLFW-b       >= 1.4 && < 1.5
+                     , mtl          >= 2.2 && < 2.3
+                     , resourcet    >= 1.1 && < 1.2
+                     , transformers >= 0.4 && < 0.5
+
+  hs-source-dirs:      src
+
+  default-language:    Haskell2010
