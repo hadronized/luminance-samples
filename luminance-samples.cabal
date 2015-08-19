@@ -1,0 +1,54 @@
+name:                luminance-samples
+version:             0.1
+synopsis:            Luminance samples
+description:         Luminance samples used as tutorial help
+homepage:            https://github.com/phaazon/luminance-samples
+bug-reports:         https://github.com/phaazon/luminance-samples/issues
+license:             BSD3
+license-file:        LICENSE
+author:              Dimitri Sabadie <dimitri.sabadie@gmail.com>
+maintainer:          Dimitri Sabadie <dimitri.sabadie@gmail.com>
+copyright:           Dimitri Sabadie
+category:            Graphics
+
+build-type:          Simple
+extra-source-files:  CHANGELOG.md
+cabal-version:       >= 1.10
+
+source-repository head
+  type:     git
+  location: git://github.com/phaazon/luminance-samples.git
+
+executable HelloWorld
+  main-is:             HelloWorld.hs
+
+  other-extensions:    DataKinds
+                     , FlexibleContexts
+
+  build-depends:       base         >= 4.8 && < 4.9
+                     , luminance    >= 0.1 && < 0.2
+                     , GLFW-b       >= 1.4 && < 1.5
+                     , mtl          >= 2.2 && < 2.3
+                     , resourcet    >= 1.1 && < 1.2
+                     , transformers >= 0.4 && < 0.5
+
+  hs-source-dirs:      src
+
+  default-language:    Haskell2010
+
+-- executable HelloWorld-Uniform
+--   main-is:             HelloWorldUniform.hs
+-- 
+--   other-extensions:    DataKinds
+--                      , FlexibleContexts
+-- 
+--   build-depends:       base         >= 4.8 && < 4.9
+--                      , luminance    >= 0.1 && < 0.2
+--                      , GLFW-b       >= 1.4 && < 1.5
+--                      , mtl          >= 2.2 && < 2.3
+--                      , resourcet    >= 1.1 && < 1.2
+--                      , transformers >= 0.4 && < 0.5
+-- 
+--   hs-source-dirs:      src
+-- 
+--   default-language:    Haskell2010
