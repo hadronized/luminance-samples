@@ -1,4 +1,5 @@
 import Control.Concurrent
+import Control.Monad
 import Control.Monad.Except ( MonadError )
 import Control.Monad.IO.Class
 import Control.Monad.Trans.Except ( runExceptT )
@@ -41,22 +42,23 @@ main = do
   windowHint (WindowHint'OpenGLProfile OpenGLProfile'Core)
   window <- createWindow windowW windowH windowTitle Nothing Nothing
   makeContextCurrent window
-  for_ window $ \window' ->
+  for_ window $ \window' -> do
     (runResourceT . runExceptT . app) window' >>= either print (const $ pure ())
+    destroyWindow window'
   terminate
 
 app :: (MonadError AppError m,MonadIO m,MonadResource m) => Window -> m ()
 app window = do
-  --framebuffer :: Framebuffer W RGB32F () <- createFramebuffer windowW windowH 1
   triangle <- createGeometry vertices Nothing Triangle
   vs <- createVertexShader vsSource
   fs <- createFragmentShader fsSource
   (program,colorsU :: Maybe (U [(Float,Float,Float)])) <- createProgram [vs,fs] (\f -> f $ Left "colors")
-  treatFBBatch $ FBBatch defaultFramebuffer [SPBatch program (traverse_ (@= colors) colorsU) $ [triangle]]
-  liftIO $ do
-    putStrLn "done!"
-    swapBuffers window
-    threadDelay 4000000
+  untilM (liftIO $ windowShouldClose window) $ do
+    treatFBBatch $ FBBatch defaultFramebuffer [SPBatch program (traverse_ (@= colors) colorsU) $ [pure triangle]]
+    liftIO $ do
+      pollEvents
+      swapBuffers window
+      threadDelay 50000
 
 colors :: [(Float,Float,Float)]
 colors = [(1,0,0),(0,1,0),(0,0,1)]
@@ -104,3 +106,10 @@ fsSource = unlines
   , "  frag = vertexColor;"
   , "}"
   ]
+
+untilM :: (Monad m) => m Bool -> m b -> m ()
+untilM pred a = go
+  where
+    go = do
+      p <- pred
+      if p then pure () else a >> go
