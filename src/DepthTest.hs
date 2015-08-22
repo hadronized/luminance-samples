@@ -1,5 +1,3 @@
-{-# LANGUAGE DataKinds, FlexibleContexts #-}
-
 import Control.Concurrent
 import Control.Monad
 import Control.Monad.Except ( MonadError )
@@ -10,23 +8,23 @@ import Data.Foldable ( for_ )
 import Graphics.Luminance.Batch
 import Graphics.Luminance.Framebuffer
 import Graphics.Luminance.Geometry
+import Graphics.Luminance.RenderCmd
 import Graphics.Luminance.Shader.Program
 import Graphics.Luminance.Shader.Stage
+import Graphics.Luminance.Shader.Uniform
 import Graphics.UI.GLFW
 import Prelude hiding ( init )
 
 data AppError = AppError String deriving (Eq,Show)
 
 instance HasFramebufferError AppError where
-  fromFramebufferError (IncompleteFramebuffer s) = AppError s
+  fromFramebufferError e = AppError (show e)
 
 instance HasStageError AppError where
-  fromStageError (CompilationFailed s) = AppError s
+  fromStageError e = AppError (show e)
 
 instance HasProgramError AppError where
-  fromProgramError e = case e of
-    LinkFailed s -> AppError s
-    InactiveUniform u -> AppError u
+  fromProgramError e = AppError (show e)
 
 windowW,windowH :: (Num a) => a
 windowW = 800
@@ -46,7 +44,6 @@ main = do
   window <- createWindow windowW windowH windowTitle Nothing Nothing
   makeContextCurrent window
   for_ window $ \window' -> do
-    swapInterval 1
     (runResourceT . runExceptT . app) window' >>= either print (const $ pure ())
     destroyWindow window'
   terminate
@@ -56,13 +53,42 @@ app window = do
   triangle <- createGeometry vertices Nothing Triangle
   vs <- createVertexShader vsSource
   fs <- createFragmentShader fsSource
-  program <- createProgram_ [vs,fs]
+  (program,(colorU,offsetU)) <- createProgram [vs,fs] $ \uni -> do
+    colorU <- uni $ Left "color"
+    offsetU <- uni $ Left "offset"
+    pure $ (colorU,offsetU)
   untilM (liftIO $ windowShouldClose window) $ do
-    treatFBBatch $ FBBatch defaultFramebuffer [SPBatch program (pure ()) $ [pure triangle]]
+    treatFBBatch $ FBBatch defaultFramebuffer
+      [SPBatch program (pure ()) $
+        [
+          RenderCmd Nothing True $ do
+            colorU @= color0
+            offsetU @= offset0
+            pure triangle
+        , RenderCmd Nothing True $ do
+            colorU @= color1
+            offsetU @= offset1
+            pure triangle
+        , RenderCmd Nothing True $ do
+            colorU @= color2
+            offsetU @= offset2
+            pure triangle
+        ]
+      ]
     liftIO $ do
       pollEvents
       swapBuffers window
       threadDelay 50000
+
+color0,color1,color2 :: (Float,Float,Float)
+color0 = (1,0,0)
+color1 = (0,1,0)
+color2 = (0,0,1)
+
+offset0,offset1,offset2 :: (Float,Float)
+offset0 = (-0.25,0)
+offset1 = (0.25,0)
+offset2 = (0,0.25)
 
 vertices :: [V 2 Float]
 vertices =
@@ -78,17 +104,11 @@ vsSource = unlines
     "#version 450 core"
   
   , "in vec2 co;"
-  , "out vec4 vertexColor;"
 
-  , "vec4 color[3] = vec4[]("
-  , "    vec4(1., 0., 0., 1.)"
-  , "  , vec4(0., 1., 0., 1.)"
-  , "  , vec4(0., 0., 1., 1.)"
-  , "  );"
+  , "uniform vec2 offset;"
 
   , "void main() {"
-  , "  gl_Position = vec4(co, 0., 1.);"
-  , "  vertexColor = color[gl_VertexID];"
+  , "  gl_Position = vec4(co + offset, 0., 1.);"
   , "}"
   ]
 
@@ -97,12 +117,12 @@ fsSource = unlines
   [
     "#version 450 core"
 
-  , "in vec4 vertexColor;"
   , "out vec4 frag;"
 
+  , "uniform vec3 color;"
 
   , "void main() {"
-  , "  frag = vertexColor;"
+  , "  frag = vec4(color, 1.);"
   , "}"
   ]
 

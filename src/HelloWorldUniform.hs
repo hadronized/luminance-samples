@@ -4,7 +4,7 @@ import Control.Monad.Except ( MonadError )
 import Control.Monad.IO.Class
 import Control.Monad.Trans.Except ( runExceptT )
 import Control.Monad.Trans.Resource
-import Data.Foldable ( for_, traverse_ )
+import Data.Foldable ( for_ )
 import Graphics.Luminance.Batch
 import Graphics.Luminance.Framebuffer
 import Graphics.Luminance.Geometry
@@ -23,7 +23,9 @@ instance HasStageError AppError where
   fromStageError (CompilationFailed s) = AppError s
 
 instance HasProgramError AppError where
-  fromProgramError (LinkFailed s) = AppError s
+  fromProgramError e = case e of
+    LinkFailed s -> AppError s
+    InactiveUniform u -> AppError u
 
 windowW,windowH :: (Num a) => a
 windowW = 800
@@ -52,9 +54,9 @@ app window = do
   triangle <- createGeometry vertices Nothing Triangle
   vs <- createVertexShader vsSource
   fs <- createFragmentShader fsSource
-  (program,colorsU :: Maybe (U [(Float,Float,Float)])) <- createProgram [vs,fs] (\f -> f $ Left "colors")
+  (program,colorsU :: U [(Float,Float,Float)]) <- createProgram [vs,fs] (\f -> f $ Left "colors")
   untilM (liftIO $ windowShouldClose window) $ do
-    treatFBBatch $ FBBatch defaultFramebuffer [SPBatch program (traverse_ (@= colors) colorsU) $ [pure triangle]]
+    treatFBBatch $ FBBatch defaultFramebuffer [SPBatch program (colorsU @= colors) $ [pure triangle]]
     liftIO $ do
       pollEvents
       swapBuffers window
@@ -108,8 +110,8 @@ fsSource = unlines
   ]
 
 untilM :: (Monad m) => m Bool -> m b -> m ()
-untilM pred a = go
+untilM predicate a = go
   where
     go = do
-      p <- pred
+      p <- predicate
       if p then pure () else a >> go
