@@ -5,6 +5,7 @@ import Control.Monad.IO.Class
 import Control.Monad.Trans.Except ( runExceptT )
 import Control.Monad.Trans.Resource
 import Data.Foldable ( for_ )
+import Data.Functor.Contravariant.Divisible
 import Graphics.Luminance.Batch
 import Graphics.Luminance.Blending
 import Graphics.Luminance.Framebuffer
@@ -12,7 +13,6 @@ import Graphics.Luminance.Geometry
 import Graphics.Luminance.RenderCmd
 import Graphics.Luminance.Shader.Program
 import Graphics.Luminance.Shader.Stage
-import Graphics.Luminance.Shader.Uniform
 import Graphics.UI.GLFW
 import Prelude hiding ( init )
 
@@ -54,26 +54,17 @@ app window = do
   triangle <- createGeometry vertices Nothing Triangle
   vs <- createVertexShader vsSource
   fs <- createFragmentShader fsSource
-  (program,(colorU,offsetU)) <- createProgram [vs,fs] $ \uni -> do
+  (program,colorOffsetU) <- createProgram [vs,fs] $ \uni -> do
     colorU <- uni $ Left "color"
     offsetU <- uni $ Left "offset"
-    pure $ (colorU,offsetU)
+    pure $ divided colorU offsetU
   untilM (liftIO $ windowShouldClose window) $ do
-    treatFBBatch $ FBBatch defaultFramebuffer
-      [SPBatch program (pure ()) $
+    treatFBBatch $ framebufferBatch defaultFramebuffer
+      [anySPBatch . SPBatch program mempty () $
         [
-          RenderCmd blending False $ do
-            colorU @= color0
-            offsetU @= offset0
-            pure triangle
-        , RenderCmd blending False $ do
-            colorU @= color1
-            offsetU @= offset1
-            pure triangle
-        , RenderCmd blending False $ do
-            colorU @= color2
-            offsetU @= offset2
-            pure triangle
+          renderCmd blending False colorOffsetU (color0,offset0) triangle 
+        , renderCmd blending False colorOffsetU (color1,offset1) triangle 
+        , renderCmd blending False colorOffsetU (color2,offset2) triangle 
         ]
       ]
     liftIO $ do

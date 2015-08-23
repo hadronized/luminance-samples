@@ -10,8 +10,11 @@ import Data.Foldable ( for_ )
 import Graphics.Luminance.Batch
 import Graphics.Luminance.Framebuffer
 import Graphics.Luminance.Geometry
+import Graphics.Luminance.Query
+import Graphics.Luminance.RenderCmd
 import Graphics.Luminance.Shader.Program
 import Graphics.Luminance.Shader.Stage
+import Graphics.Luminance.Shader.Uniform
 import Graphics.UI.GLFW
 import Prelude hiding ( init )
 
@@ -57,8 +60,9 @@ app window = do
   vs <- createVertexShader vsSource
   fs <- createFragmentShader fsSource
   program <- createProgram_ [vs,fs]
+  getGLExtensions >>= liftIO . print
   untilM (liftIO $ windowShouldClose window) $ do
-    treatFBBatch $ FBBatch defaultFramebuffer [SPBatch program (pure ()) $ [pure triangle]]
+    treatFBBatch $ framebufferBatch defaultFramebuffer [anySPBatch . shaderProgramBatch program mempty () $ [stdRenderCmd mempty () triangle]]
     liftIO $ do
       pollEvents
       swapBuffers window

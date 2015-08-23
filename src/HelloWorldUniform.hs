@@ -8,6 +8,7 @@ import Data.Foldable ( for_ )
 import Graphics.Luminance.Batch
 import Graphics.Luminance.Framebuffer
 import Graphics.Luminance.Geometry
+import Graphics.Luminance.RenderCmd
 import Graphics.Luminance.Shader.Program
 import Graphics.Luminance.Shader.Stage
 import Graphics.Luminance.Shader.Uniform
@@ -56,7 +57,7 @@ app window = do
   fs <- createFragmentShader fsSource
   (program,colorsU :: U [(Float,Float,Float)]) <- createProgram [vs,fs] (\f -> f $ Left "colors")
   untilM (liftIO $ windowShouldClose window) $ do
-    treatFBBatch $ FBBatch defaultFramebuffer [SPBatch program (colorsU @= colors) $ [pure triangle]]
+    treatFBBatch $ framebufferBatch defaultFramebuffer [anySPBatch . shaderProgramBatch program colorsU colors $ [stdRenderCmd mempty () triangle]]
     liftIO $ do
       pollEvents
       swapBuffers window
