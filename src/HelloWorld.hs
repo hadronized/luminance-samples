@@ -14,7 +14,7 @@ import Graphics.Luminance.Query
 import Graphics.Luminance.RenderCmd
 import Graphics.Luminance.Shader.Program
 import Graphics.Luminance.Shader.Stage
-import Graphics.Luminance.Shader.Uniform
+import Graphics.Luminance.Vertex
 import Graphics.UI.GLFW
 import Prelude hiding ( init )
 

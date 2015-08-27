@@ -13,6 +13,7 @@ import Graphics.Luminance.Geometry
 import Graphics.Luminance.RenderCmd
 import Graphics.Luminance.Shader.Program
 import Graphics.Luminance.Shader.Stage
+import Graphics.Luminance.Vertex
 import Graphics.UI.GLFW
 import Prelude hiding ( init )
 
