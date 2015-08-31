@@ -34,7 +34,7 @@ windowW = 800
 windowH = 600
 
 windowTitle :: String
-windowTitle = "Test"
+windowTitle = "Hello, world! [uniform]"
 
 main :: IO ()
 main = do
