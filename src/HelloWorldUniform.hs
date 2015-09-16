@@ -1,11 +1,8 @@
-import Control.Concurrent
+import Common
 import Control.Monad
-import Control.Monad.Except ( MonadError )
 import Control.Monad.IO.Class
-import Control.Monad.Trans.Except ( runExceptT )
-import Control.Monad.Trans.Resource
-import Data.Foldable ( for_ )
 import Graphics.Luminance.Batch
+import Graphics.Luminance.Cmd
 import Graphics.Luminance.Framebuffer
 import Graphics.Luminance.Geometry
 import Graphics.Luminance.RenderCmd
@@ -14,55 +11,16 @@ import Graphics.Luminance.Shader.Stage
 import Graphics.Luminance.Shader.Uniform
 import Graphics.Luminance.Vertex
 import Graphics.UI.GLFW
-import Prelude hiding ( init )
-
-data AppError = AppError String deriving (Eq,Show)
-
-instance HasFramebufferError AppError where
-  fromFramebufferError (IncompleteFramebuffer s) = AppError s
-
-instance HasStageError AppError where
-  fromStageError (CompilationFailed s) = AppError s
-
-instance HasProgramError AppError where
-  fromProgramError e = case e of
-    LinkFailed s -> AppError s
-    InactiveUniform u -> AppError u
-
-windowW,windowH :: (Num a) => a
-windowW = 800
-windowH = 600
-
-windowTitle :: String
-windowTitle = "Hello, world! [uniform]"
 
 main :: IO ()
-main = do
-  _ <- init
-  windowHint (WindowHint'Resizable False)
-  windowHint (WindowHint'ContextVersionMajor 4)
-  windowHint (WindowHint'ContextVersionMinor 5)
-  windowHint (WindowHint'OpenGLForwardCompat False)
-  windowHint (WindowHint'OpenGLProfile OpenGLProfile'Core)
-  window <- createWindow windowW windowH windowTitle Nothing Nothing
-  makeContextCurrent window
-  for_ window $ \window' -> do
-    (runResourceT . runExceptT . app) window' >>= either print (const $ pure ())
-    destroyWindow window'
-  terminate
-
-app :: (MonadError AppError m,MonadIO m,MonadResource m) => Window -> m ()
-app window = do
+main = startup $ \window -> do
   triangle <- createGeometry vertices Nothing Triangle
   vs <- createVertexShader vsSource
   fs <- createFragmentShader fsSource
   (program,colorsU :: U [(Float,Float,Float)]) <- createProgram [vs,fs] (\f -> f $ Left "colors")
   untilM (liftIO $ windowShouldClose window) $ do
-    treatFBBatch $ framebufferBatch defaultFramebuffer [anySPBatch . shaderProgramBatch program colorsU colors $ [stdRenderCmd mempty () triangle]]
-    liftIO $ do
-      pollEvents
-      swapBuffers window
-      threadDelay 50000
+    void . runCmd . draw $ framebufferBatch defaultFramebuffer [anySPBatch . shaderProgramBatch program colorsU colors $ [stdRenderCmd mempty () triangle]]
+    endFrame window
 
 colors :: [(Float,Float,Float)]
 colors = [(1,0,0),(0,1,0),(0,0,1)]
@@ -110,10 +68,3 @@ fsSource = unlines
   , "  frag = vertexColor;"
   , "}"
   ]
-
-untilM :: (Monad m) => m Bool -> m b -> m ()
-untilM predicate a = go
-  where
-    go = do
-      p <- predicate
-      if p then pure () else a >> go
