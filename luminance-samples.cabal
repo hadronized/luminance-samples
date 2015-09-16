@@ -24,7 +24,7 @@ executable HelloWorld
 
   main-is:             HelloWorld.hs
 
-  other-extensions:    DataKinds
+  default-extensions:  DataKinds
                      , FlexibleContexts
 
   build-depends:       base         >= 4.8 && < 4.9
