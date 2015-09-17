@@ -32,7 +32,7 @@ windowW = 800
 windowH = 600
 
 windowTitle :: String
-windowTitle = "Hello, world!"
+windowTitle = "luminance-sample"
 
 startup :: (Window -> App ()) -> IO ()
 startup app = do
