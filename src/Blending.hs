@@ -1,12 +1,9 @@
-import Control.Concurrent
+import Common
 import Control.Monad
-import Control.Monad.Except ( MonadError )
 import Control.Monad.IO.Class
-import Control.Monad.Trans.Except ( runExceptT )
-import Control.Monad.Trans.Resource
-import Data.Foldable ( for_ )
 import Data.Functor.Contravariant.Divisible
 import Graphics.Luminance.Batch
+import Graphics.Luminance.Cmd
 import Graphics.Luminance.Blending
 import Graphics.Luminance.Framebuffer
 import Graphics.Luminance.Geometry
@@ -15,43 +12,9 @@ import Graphics.Luminance.Shader.Program
 import Graphics.Luminance.Shader.Stage
 import Graphics.Luminance.Vertex
 import Graphics.UI.GLFW
-import Prelude hiding ( init )
-
-data AppError = AppError String deriving (Eq,Show)
-
-instance HasFramebufferError AppError where
-  fromFramebufferError e = AppError (show e)
-
-instance HasStageError AppError where
-  fromStageError e = AppError (show e)
-
-instance HasProgramError AppError where
-  fromProgramError e = AppError (show e)
-
-windowW,windowH :: (Num a) => a
-windowW = 800
-windowH = 600
-
-windowTitle :: String
-windowTitle = "Blending"
 
 main :: IO ()
-main = do
-  _ <- init
-  windowHint (WindowHint'Resizable False)
-  windowHint (WindowHint'ContextVersionMajor 4)
-  windowHint (WindowHint'ContextVersionMinor 5)
-  windowHint (WindowHint'OpenGLForwardCompat False)
-  windowHint (WindowHint'OpenGLProfile OpenGLProfile'Core)
-  window <- createWindow windowW windowH windowTitle Nothing Nothing
-  makeContextCurrent window
-  for_ window $ \window' -> do
-    (runResourceT . runExceptT . app) window' >>= either print (const $ pure ())
-    destroyWindow window'
-  terminate
-
-app :: (MonadError AppError m,MonadIO m,MonadResource m) => Window -> m ()
-app window = do
+main = startup $ \window -> do
   triangle <- createGeometry vertices Nothing Triangle
   vs <- createVertexShader vsSource
   fs <- createFragmentShader fsSource
@@ -60,7 +23,7 @@ app window = do
     offsetU <- uni $ Left "offset"
     pure $ divided colorU offsetU
   untilM (liftIO $ windowShouldClose window) $ do
-    treatFBBatch $ framebufferBatch defaultFramebuffer
+    void . runCmd . draw $ framebufferBatch defaultFramebuffer
       [anySPBatch . SPBatch program mempty () $
         [
           renderCmd blending False colorOffsetU (color0,offset0) triangle 
@@ -68,10 +31,7 @@ app window = do
         , renderCmd blending False colorOffsetU (color2,offset2) triangle 
         ]
       ]
-    liftIO $ do
-      pollEvents
-      swapBuffers window
-      threadDelay 50000
+    endFrame window
 
 color0,color1,color2 :: (Float,Float,Float)
 color0 = (1,0,0)
@@ -121,10 +81,3 @@ fsSource = unlines
   , "  frag = vec4(color, 1.);"
   , "}"
   ]
-
-untilM :: (Monad m) => m Bool -> m b -> m ()
-untilM predicate a = go
-  where
-    go = do
-      p <- predicate
-      if p then pure () else a >> go
