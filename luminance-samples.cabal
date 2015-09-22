@@ -1,5 +1,5 @@
 name:                luminance-samples
-version:             0.1
+version:             0.1.1
 synopsis:            Luminance samples
 description:         Luminance samples used as tutorial help
 homepage:            https://github.com/phaazon/luminance-samples
@@ -13,6 +13,7 @@ category:            Graphics
 
 build-type:          Simple
 extra-source-files:  CHANGELOG.md
+                   , src/Common.hs
 cabal-version:       >= 1.10
 
 source-repository head

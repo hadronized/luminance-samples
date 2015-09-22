@@ -5,12 +5,12 @@ import Control.Monad
 import Control.Monad.IO.Class
 import Control.Monad.Trans.Except
 import Control.Monad.Trans.Resource
-import Data.Foldable ( for_ )
 import Graphics.Luminance.Framebuffer
 import Graphics.Luminance.Shader.Program
 import Graphics.Luminance.Shader.Stage
 import Graphics.UI.GLFW
 import Prelude hiding ( init )
+import System.IO ( hPutStrLn, stderr )
 
 type App = ExceptT AppError (ResourceT IO)
 
@@ -44,10 +44,12 @@ startup app = do
   windowHint (WindowHint'OpenGLProfile OpenGLProfile'Core)
   window <- createWindow windowW windowH windowTitle Nothing Nothing
   makeContextCurrent window
-  for_ window $ \window' -> do
-    swapInterval 1
-    (runResourceT . runExceptT . app) window' >>= either print (const $ pure ())
-    destroyWindow window'
+  case window of
+    Just window' -> do
+      swapInterval 1
+      (runResourceT . runExceptT . app) window' >>= either print (const $ pure ())
+      destroyWindow window'
+    Nothing -> hPutStrLn stderr "unable to create window; please check your hardware support OpenGL4.5"
   terminate
 
 endFrame :: (MonadIO m) => Window -> m ()
