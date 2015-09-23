@@ -14,9 +14,7 @@ import Graphics.UI.GLFW
 main :: IO ()
 main = startup $ \window -> do
   triangle <- createGeometry vertices Nothing Triangle
-  vs <- createVertexShader vsSource
-  fs <- createFragmentShader fsSource
-  program <- createProgram_ [vs,fs]
+  program <- sequenceA [createVertexShader vsSource,createFragmentShader fsSource] >>= createProgram_
   untilM (liftIO $ windowShouldClose window) $ do
     void . runCmd . draw $ framebufferBatch defaultFramebuffer [anySPBatch . shaderProgramBatch program mempty () $ [stdRenderCmd mempty () triangle]]
     endFrame window
