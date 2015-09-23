@@ -14,7 +14,7 @@ import System.IO ( hPutStrLn, stderr )
 
 type App = ExceptT AppError (ResourceT IO)
 
-data AppError = AppError String deriving (Eq,Show)
+newtype AppError = AppError String deriving (Eq,Show)
 
 instance HasFramebufferError AppError where
   fromFramebufferError (IncompleteFramebuffer s) = AppError s
