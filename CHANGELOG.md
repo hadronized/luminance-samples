@@ -1,3 +1,7 @@
+### 0.2.0.1
+
+- Simplified the implementation of all samples.
+
 ### 0.2
 
 - Removed explicit GLSL pragmas because they’re now handled in luminance-0.2+.
