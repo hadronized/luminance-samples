@@ -16,7 +16,7 @@ main = startup $ \window -> do
   triangle <- createGeometry vertices Nothing Triangle
   program <- sequenceA [createVertexShader vsSource,createFragmentShader fsSource] >>= createProgram_
   untilM (liftIO $ windowShouldClose window) $ do
-    void . runCmd . draw $ framebufferBatch defaultFramebuffer [anySPBatch . shaderProgramBatch program mempty () $ [stdRenderCmd mempty () triangle]]
+    void . runCmd . draw $ framebufferBatch defaultFramebuffer [anySPBatch $ shaderProgramBatch_ program [stdRenderCmd_ triangle]]
     endFrame window
 
 vertices :: [V 2 Float]
