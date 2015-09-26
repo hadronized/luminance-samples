@@ -23,7 +23,7 @@ main = startup $ \window -> do
     pure $ divided colorU offsetU
   untilM (liftIO $ windowShouldClose window) $ do
     void . runCmd . draw $ framebufferBatch defaultFramebuffer
-      [anySPBatch . shaderProgramBatch program mempty () $
+      [anySPBatch . shaderProgramBatch_ program $
         [
           renderCmd Nothing True colorOffsetU (color0,offset0) triangle 
         , renderCmd Nothing True colorOffsetU (color1,offset1) triangle 
