@@ -50,9 +50,7 @@ vertices =
 vsSource :: String
 vsSource = unlines
   [
-    "#version 450 core"
-  
-  , "in vec2 co;"
+    "in vec2 co;"
 
   , "void main() {"
   , "  gl_Position = vec4(co, 0., 1.);"
@@ -62,10 +60,7 @@ vsSource = unlines
 fsSource :: String
 fsSource = unlines
   [
-    "#version 450 core"
-  , "#extension GL_ARB_bindless_texture : require"
-
-  , "out vec4 frag;"
+    "out vec4 frag;"
 
   , "layout (bindless_sampler) uniform usampler2D srcTex;"
 

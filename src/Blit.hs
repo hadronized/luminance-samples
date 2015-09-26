@@ -38,9 +38,7 @@ vertices =
 vsSource :: String
 vsSource = unlines
   [
-    "#version 450 core"
-  
-  , "in vec2 co;"
+    "in vec2 co;"
 
   , "void main() {"
   , "  gl_Position = vec4(co, 0., 1.);"
@@ -50,9 +48,7 @@ vsSource = unlines
 fsSource :: String
 fsSource = unlines
   [
-    "#version 450 core"
-
-  , "out vec4 frag;"
+    "out vec4 frag;"
 
   , "void main() {"
   , "  frag = vec4(1., 0., 0., 1.);"

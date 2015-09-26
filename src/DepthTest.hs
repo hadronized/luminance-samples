@@ -53,9 +53,7 @@ vertices =
 vsSource :: String
 vsSource = unlines
   [
-    "#version 450 core"
-  
-  , "in vec2 co;"
+    "in vec2 co;"
 
   , "uniform vec2 offset;"
 
@@ -67,9 +65,7 @@ vsSource = unlines
 fsSource :: String
 fsSource = unlines
   [
-    "#version 450 core"
-
-  , "out vec4 frag;"
+    "out vec4 frag;"
 
   , "uniform vec3 color;"
 
