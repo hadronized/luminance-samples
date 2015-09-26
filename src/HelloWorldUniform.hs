@@ -19,7 +19,7 @@ main = startup $ \window -> do
   fs <- createFragmentShader fsSource
   (program,colorsU :: U [(Float,Float,Float)]) <- createProgram [vs,fs] (\f -> f $ Left "colors")
   untilM (liftIO $ windowShouldClose window) $ do
-    void . runCmd . draw $ framebufferBatch defaultFramebuffer [anySPBatch . shaderProgramBatch program colorsU colors $ [stdRenderCmd mempty () triangle]]
+    void . runCmd . draw $ framebufferBatch defaultFramebuffer [anySPBatch $ shaderProgramBatch program colorsU colors [stdRenderCmd_ triangle]]
     endFrame window
 
 colors :: [(Float,Float,Float)]
