@@ -23,7 +23,7 @@ main = startup $ \window -> do
   untilM (liftIO $ windowShouldClose window) $ do
     _ <- runCmd $ do
       _ <- draw $ framebufferBatch fb 
-        [anySPBatch $ shaderProgramBatch_ program [renderCmd Nothing True mempty () triangle]]
+        [anySPBatch $ shaderProgramBatch_ program [stdRenderCmd_ triangle]]
       blit fb defaultFramebuffer 0 0 windowW windowH 0 0 windowW windowH BlitColor Linear
     endFrame window
 

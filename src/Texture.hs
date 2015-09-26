@@ -33,7 +33,7 @@ main = startup $ \window -> do
     uni $ Left "srcTex"
   untilM (liftIO $ windowShouldClose window) $ do
     void . runCmd . draw $ framebufferBatch defaultFramebuffer
-      [anySPBatch $ shaderProgramBatch_ program texU tex [stdRenderCmd_ quad]]
+      [anySPBatch $ shaderProgramBatch program texU tex [stdRenderCmd_ quad]]
     endFrame window
 
 vertices :: [V 2 Float]
