@@ -82,8 +82,10 @@ loadTexture path = liftIO (readImage path) >>= either (throwError . AppError) tr
 
 createTexture_ :: (MonadIO m,MonadResource m) => Image PixelRGBA8 -> m (Texture2D RGBA8UI)
 createTexture_ img = do
-  tex <- createTexture (fromIntegral $ imageWidth img) (fromIntegral $ imageHeight img) 1 defaultSampling
-  uploadWhole tex False (convertV $ imageData img)
+  let w = fromIntegral $ imageWidth img
+      h = fromIntegral $ imageHeight img
+  tex <- createTexture (w,h) 1 defaultSampling
+  uploadSub tex (0,0) (w,h) False (convertV $ imageData img)
   pure tex
 
 convertV :: (Storable a) => S.Vector a -> Vector a

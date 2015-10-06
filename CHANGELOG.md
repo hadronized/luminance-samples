@@ -1,3 +1,7 @@
+### 0.2.0.2
+
+- Updated the Texture sample to adapt to luminance new texture interface.
+
 ### 0.2.0.1
 
 - Simplified the implementation of all samples.
