@@ -1,3 +1,8 @@
+# 0.3
+
+- Updated luminance dependency to include the latest version and break compatibility with older
+  versions.
+
 ### 0.2.0.2
 
 - Updated the Texture sample to adapt to luminance new texture interface.
