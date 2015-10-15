@@ -30,9 +30,9 @@ main = startup $ \window -> do
 vertices :: [V 2 Float]
 vertices =
   [
-    V2 (-0.5) (-0.5)
-  , V2 0 0.5
-  , V2 0.5 (-0.5)
+    vec2 (-0.5) (-0.5)
+  , vec2 0 0.5
+  , vec2 0.5 (-0.5)
   ]
 
 vsSource :: String
