@@ -5,9 +5,6 @@ import Control.Monad
 import Control.Monad.Except ( MonadError(..) )
 import Control.Monad.IO.Class
 import Control.Monad.Trans.Resource
-import Data.Vector ( Vector, convert )
-import qualified Data.Vector.Storable as S ( Vector )
-import Foreign.Storable ( Storable )
 import Graphics.Luminance.Batch
 import Graphics.Luminance.Cmd
 import Graphics.Luminance.Framebuffer
@@ -77,16 +74,13 @@ loadTexture path = liftIO (readImage path) >>= either (throwError . AppError) tr
   where
     treatDynamicImage image = case image of
       ImageRGBA8 img  -> liftIO (putStrLn "ImageRGBA8") >> createTexture_ img
-      ImageYCbCr8 img ->  liftIO (putStrLn "ImageYCbCr8") >> createTexture_ (promoteImage $ (convertImage img :: Image PixelRGB8))
-      _ -> throwError $ AppError "unsupported image format"
+      ImageYCbCr8 img ->  liftIO (putStrLn "ImageYCbCr8") >> createTexture_ (promoteImage (convertImage img :: Image PixelRGB8))
+      _ -> throwError (AppError "unsupported image format")
 
 createTexture_ :: (MonadIO m,MonadResource m) => Image PixelRGBA8 -> m (Texture2D RGBA8UI)
 createTexture_ img = do
   let w = fromIntegral $ imageWidth img
       h = fromIntegral $ imageHeight img
   tex <- createTexture (w,h) 1 defaultSampling
-  uploadSub tex (0,0) (w,h) False (convertV $ imageData img)
+  uploadSub tex (0,0) (w,h) False (imageData img)
   pure tex
-
-convertV :: (Storable a) => S.Vector a -> Vector a
-convertV = convert
