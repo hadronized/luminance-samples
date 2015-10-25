@@ -17,7 +17,8 @@ main = startup $ \window -> do
   triangle <- createGeometry vertices Nothing Triangle
   vs <- createVertexShader vsSource
   fs <- createFragmentShader fsSource
-  (program,colorsU :: U [(Float,Float,Float)]) <- createProgram [vs,fs] (\f -> f $ Left "colors")
+  (program,colorsU :: U [(Float,Float,Float)]) <- createProgram [vs,fs] $ \uni _ ->
+    uni (Left "colors")
   untilM (liftIO $ windowShouldClose window) $ do
     void . runCmd . draw $ framebufferBatch defaultFramebuffer [anySPBatch $ shaderProgramBatch program colorsU colors [stdRenderCmd_ triangle]]
     endFrame window

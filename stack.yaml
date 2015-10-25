@@ -1,9 +1,10 @@
 resolver: nightly-2015-10-25
 
 packages:
-- '.'
+  - '.'
+  - '../luminance'
 
-extra-deps: []
+extra-deps: [linear-1.20.2]
 
 flags: {}
 

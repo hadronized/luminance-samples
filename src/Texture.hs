@@ -21,12 +21,12 @@ import System.Environment ( getArgs )
 main :: IO ()
 main = startup $ \window -> do
   args <- liftIO getArgs
-  when (null args) . throwError $ AppError "expecting a texture path as argument!"
+  when (null args) . throwError $ CLIUsage "expecting a texture path as argument!"
   tex <- loadTexture (head args)
   quad <- createGeometry vertices Nothing Triangle
   vs <- createVertexShader vsSource
   fs <- createFragmentShader fsSource
-  (program,texU) <- createProgram [vs,fs] $ \uni -> do
+  (program,texU) <- createProgram [vs,fs] $ \uni _ -> do
     uni $ Left "srcTex"
   untilM (liftIO $ windowShouldClose window) $ do
     void . runCmd . draw $ framebufferBatch defaultFramebuffer
@@ -70,12 +70,12 @@ fsSource = unlines
   ]
 
 loadTexture :: (MonadError AppError m,MonadIO m,MonadResource m) => String -> m (Texture2D RGBA8UI)
-loadTexture path = liftIO (readImage path) >>= either (throwError . AppError) treatDynamicImage
+loadTexture path = liftIO (readImage path) >>= either (throwError . TextureLoadFailed) treatDynamicImage
   where
     treatDynamicImage image = case image of
       ImageRGBA8 img  -> liftIO (putStrLn "ImageRGBA8") >> createTexture_ img
       ImageYCbCr8 img ->  liftIO (putStrLn "ImageYCbCr8") >> createTexture_ (promoteImage (convertImage img :: Image PixelRGB8))
-      _ -> throwError (AppError "unsupported image format")
+      _ -> throwError (TextureLoadFailed "unsupported image format")
 
 createTexture_ :: (MonadIO m,MonadResource m) => Image PixelRGBA8 -> m (Texture2D RGBA8UI)
 createTexture_ img = do

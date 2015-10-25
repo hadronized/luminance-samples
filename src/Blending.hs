@@ -18,7 +18,7 @@ main = startup $ \window -> do
   triangle <- createGeometry vertices Nothing Triangle
   vs <- createVertexShader vsSource
   fs <- createFragmentShader fsSource
-  (program,colorOffsetU) <- createProgram [vs,fs] $ \uni -> do
+  (program,colorOffsetU) <- createProgram [vs,fs] $ \uni _ -> do
     colorU <- uni $ Left "color"
     offsetU <- uni $ Left "offset"
     pure $ divided colorU offsetU

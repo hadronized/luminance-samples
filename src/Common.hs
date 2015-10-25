@@ -14,18 +14,27 @@ import System.IO ( hPutStrLn, stderr )
 
 type App = ExceptT AppError (ResourceT IO)
 
-newtype AppError = AppError String deriving (Eq,Show)
+data AppError
+  = AppIncompleteFramebuffer String
+  | AppStageCompilationFailed String
+  | AppProgramLinkFailed String
+  | AppInactiveUniform String
+  | AppInactiveUniformBlock String
+  | TextureLoadFailed String
+  | CLIUsage String
+    deriving (Eq,Show)
 
 instance HasFramebufferError AppError where
-  fromFramebufferError (IncompleteFramebuffer s) = AppError s
+  fromFramebufferError (IncompleteFramebuffer s) = AppIncompleteFramebuffer s
 
 instance HasStageError AppError where
-  fromStageError (CompilationFailed s) = AppError s
+  fromStageError (CompilationFailed s) = AppStageCompilationFailed s
 
 instance HasProgramError AppError where
   fromProgramError e = case e of
-    LinkFailed s -> AppError s
-    InactiveUniform u -> AppError (show u)
+    LinkFailed s -> AppProgramLinkFailed s
+    InactiveUniform u -> AppInactiveUniform (show u)
+    InactiveUniformBlock s -> AppInactiveUniformBlock s
 
 windowW,windowH :: (Num a) => a
 windowW = 800

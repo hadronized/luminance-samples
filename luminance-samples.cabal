@@ -25,11 +25,13 @@ executable HelloWorld
 
   main-is:             HelloWorld.hs
 
+  other-modules:       Common
+
   default-extensions:  DataKinds
                      , FlexibleContexts
 
   build-depends:       base         >= 4.8 && < 4.9
-                     , luminance    >= 0.5 && < 0.6
+                     , luminance    >= 0.6 && < 0.7
                      , GLFW-b       >= 1.4 && < 1.5
                      , mtl          >= 2.2 && < 2.3
                      , resourcet    >= 1.1 && < 1.2
@@ -44,12 +46,14 @@ executable HelloWorldUniform
 
   main-is:             HelloWorldUniform.hs
 
+  other-modules:       Common
+
   default-extensions:  DataKinds
                      , FlexibleContexts
                      , ScopedTypeVariables
 
   build-depends:       base         >= 4.8 && < 4.9
-                     , luminance    >= 0.5 && < 0.6
+                     , luminance    >= 0.6 && < 0.7
                      , GLFW-b       >= 1.4 && < 1.5
                      , mtl          >= 2.2 && < 2.3
                      , resourcet    >= 1.1 && < 1.2
@@ -59,10 +63,12 @@ executable HelloWorldUniform
 
   default-language:    Haskell2010
 
-executable DepthTest 
+executable DepthTest
   ghc-options:         -W -Wall -O2
 
   main-is:             DepthTest.hs
+
+  other-modules:       Common
 
   default-extensions:  DataKinds
                      , FlexibleContexts
@@ -70,7 +76,7 @@ executable DepthTest
 
   build-depends:       base          >= 4.8 && < 4.9
                      , contravariant >= 1.3 && < 1.4
-                     , luminance     >= 0.5 && < 0.6
+                     , luminance     >= 0.6 && < 0.7
                      , GLFW-b        >= 1.4 && < 1.5
                      , mtl           >= 2.2 && < 2.3
                      , resourcet     >= 1.1 && < 1.2
@@ -85,13 +91,15 @@ executable Blending
 
   main-is:             Blending.hs
 
+  other-modules:       Common
+
   default-extensions:  DataKinds
                      , FlexibleContexts
                      , ScopedTypeVariables
 
   build-depends:       base          >= 4.8 && < 4.9
                      , contravariant >= 1.3 && < 1.4
-                     , luminance     >= 0.5 && < 0.6
+                     , luminance     >= 0.6 && < 0.7
                      , GLFW-b        >= 1.4 && < 1.5
                      , mtl           >= 2.2 && < 2.3
                      , resourcet     >= 1.1 && < 1.2
@@ -101,10 +109,12 @@ executable Blending
 
   default-language:    Haskell2010
 
-executable Texture 
+executable Texture
   ghc-options:         -W -Wall -O2
 
   main-is:             Texture.hs
+
+  other-modules:       Common
 
   default-extensions:  DataKinds
                      , FlexibleContexts
@@ -113,7 +123,7 @@ executable Texture
   build-depends:       base          >= 4.8  && < 4.9
                      , contravariant >= 1.3  && < 1.4
                      , JuicyPixels   >= 3.2  && < 3.4
-                     , luminance     >= 0.5  && < 0.6
+                     , luminance     >= 0.6  && < 0.7
                      , GLFW-b        >= 1.4  && < 1.5
                      , mtl           >= 2.2  && < 2.3
                      , resourcet     >= 1.1  && < 1.2
@@ -123,10 +133,12 @@ executable Texture
 
   default-language:    Haskell2010
 
-executable Blit 
+executable Blit
   ghc-options:         -W -Wall -O2
 
   main-is:             Blit.hs
+
+  other-modules:       Common
 
   default-extensions:  DataKinds
                      , FlexibleContexts
@@ -134,7 +146,7 @@ executable Blit
 
   build-depends:       base          >= 4.8  && < 4.9
                      , contravariant >= 1.3  && < 1.4
-                     , luminance     >= 0.5  && < 0.6
+                     , luminance     >= 0.6  && < 0.7
                      , GLFW-b        >= 1.4  && < 1.5
                      , mtl           >= 2.2  && < 2.3
                      , resourcet     >= 1.1  && < 1.2
@@ -143,3 +155,26 @@ executable Blit
   hs-source-dirs:      src
 
   default-language:    Haskell2010
+
+-- executable UBO
+--   ghc-options:         -W -Wall -O2
+-- 
+--   main-is:             UBO.hs
+-- 
+--   other-modules:       Common
+--
+--   default-extensions:  DataKinds
+--                      , FlexibleContexts
+--                      , ScopedTypeVariables
+-- 
+--   build-depends:       base          >= 4.8  && < 4.9
+--                      , contravariant >= 1.3  && < 1.4
+--                      , luminance     >= 0.6  && < 0.7
+--                      , GLFW-b        >= 1.4  && < 1.5
+--                      , mtl           >= 2.2  && < 2.3
+--                      , resourcet     >= 1.1  && < 1.2
+--                      , transformers  >= 0.4  && < 0.5
+-- 
+--   hs-source-dirs:      src
+-- 
+--   default-language:    Haskell2010

@@ -1,3 +1,13 @@
+# 0.6
+
+- Updated luminance dependency to include the latest version and break compatibility with older
+  versions.
+
+# 0.5
+
+- Updated luminance dependency to include the latest version and break compatibility with older
+  versions.
+
 # 0.4
 
 - Updated luminance dependency to include the latest version and break compatibility with older
