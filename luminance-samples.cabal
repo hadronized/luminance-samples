@@ -1,5 +1,5 @@
 name:                luminance-samples
-version:             0.5
+version:             0.6
 synopsis:            Luminance samples
 description:         Luminance samples used as tutorial help
 homepage:            https://github.com/phaazon/luminance-samples
@@ -156,25 +156,26 @@ executable Blit
 
   default-language:    Haskell2010
 
--- executable UBO
---   ghc-options:         -W -Wall -O2
--- 
---   main-is:             UBO.hs
--- 
---   other-modules:       Common
---
---   default-extensions:  DataKinds
---                      , FlexibleContexts
---                      , ScopedTypeVariables
--- 
---   build-depends:       base          >= 4.8  && < 4.9
---                      , contravariant >= 1.3  && < 1.4
---                      , luminance     >= 0.6  && < 0.7
---                      , GLFW-b        >= 1.4  && < 1.5
---                      , mtl           >= 2.2  && < 2.3
---                      , resourcet     >= 1.1  && < 1.2
---                      , transformers  >= 0.4  && < 0.5
--- 
---   hs-source-dirs:      src
--- 
---   default-language:    Haskell2010
+executable UBO
+  ghc-options:         -W -Wall -O2
+
+  main-is:             UBO.hs
+
+  other-modules:       Common
+
+  default-extensions:  DataKinds
+                     , FlexibleContexts
+                     , ScopedTypeVariables
+
+  build-depends:       base          >= 4.8  && < 4.9
+                     , contravariant >= 1.3  && < 1.4
+                     , linear        >= 1.20 && < 1.21
+                     , luminance     >= 0.6  && < 0.7
+                     , GLFW-b        >= 1.4  && < 1.5
+                     , mtl           >= 2.2  && < 2.3
+                     , resourcet     >= 1.1  && < 1.2
+                     , transformers  >= 0.4  && < 0.5
+
+  hs-source-dirs:      src
+
+  default-language:    Haskell2010
