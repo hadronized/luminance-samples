@@ -164,6 +164,7 @@ executable UBO
   other-modules:       Common
 
   default-extensions:  DataKinds
+                     , DeriveGeneric
                      , FlexibleContexts
                      , ScopedTypeVariables
 
