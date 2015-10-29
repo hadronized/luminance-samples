@@ -1,3 +1,7 @@
+### 0.6.0.1
+
+- Updated UBO sample to fix issues with Generic.
+
 # 0.6
 
 - Updated luminance dependency to include the latest version and break compatibility with older
