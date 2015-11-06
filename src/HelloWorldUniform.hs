@@ -1,25 +1,17 @@
 import Common
 import Control.Monad
 import Control.Monad.IO.Class
-import Graphics.Luminance.Batch
-import Graphics.Luminance.Cmd
-import Graphics.Luminance.Framebuffer
-import Graphics.Luminance.Geometry
-import Graphics.Luminance.RenderCmd
-import Graphics.Luminance.Shader.Program
-import Graphics.Luminance.Shader.Stage
-import Graphics.Luminance.Shader.Uniform
-import Graphics.Luminance.Vertex
+import Graphics.Luminance
 import Graphics.UI.GLFW
 
 main :: IO ()
-main = startup $ \window -> do
+main = startup $ \window mainLoop -> do
   triangle <- createGeometry vertices Nothing Triangle
-  vs <- createVertexShader vsSource
-  fs <- createFragmentShader fsSource
+  vs <- createStage VertexShader vsSource
+  fs <- createStage FragmentShader fsSource
   (program,colorsU :: U [(Float,Float,Float)]) <- createProgram [vs,fs] $ \uni _ ->
     uni (Left "colors")
-  untilM (liftIO $ windowShouldClose window) $ do
+  mainLoop $ do
     void . runCmd . draw $ framebufferBatch defaultFramebuffer [anySPBatch $ shaderProgramBatch program colorsU colors [stdRenderCmd_ triangle]]
     endFrame window
 

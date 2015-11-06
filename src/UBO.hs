@@ -7,14 +7,14 @@ import Graphics.UI.GLFW
 import Linear
 
 main :: IO ()
-main = startup $ \window -> do
+main = startup $ \window mainLoop -> do
   triangle <- createGeometry vertices Nothing Triangle
-  vs <- createVertexShader vsSource
-  fs <- createFragmentShader fsSource
+  vs <- createStage VertexShader vsSource
+  fs <- createStage FragmentShader fsSource
   colorBuffer :: Region RW (UB Color) <- createBuffer (newRegion 3)
   writeWhole colorBuffer (map UB colors)
   (program,colorsU) <- createProgram [vs,fs] $ \_ uniBlock -> uniBlock "Colors"
-  untilM (liftIO $ windowShouldClose window) $ do
+  mainLoop $ do
     void . runCmd . draw $ framebufferBatch defaultFramebuffer [anySPBatch $ shaderProgramBatch program colorsU colorBuffer [stdRenderCmd_ triangle]]
     endFrame window
 

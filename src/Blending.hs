@@ -14,15 +14,15 @@ import Graphics.Luminance.Vertex
 import Graphics.UI.GLFW
 
 main :: IO ()
-main = startup $ \window -> do
+main = startup $ \window mainLoop -> do
   triangle <- createGeometry vertices Nothing Triangle
-  vs <- createVertexShader vsSource
-  fs <- createFragmentShader fsSource
+  vs <- createStage VertexShader vsSource
+  fs <- createStage FragmentShader fsSource
   (program,colorOffsetU) <- createProgram [vs,fs] $ \uni _ -> do
     colorU <- uni $ Left "color"
     offsetU <- uni $ Left "offset"
     pure $ divided colorU offsetU
-  untilM (liftIO $ windowShouldClose window) $ do
+  mainLoop $ do
     void . runCmd . draw $ framebufferBatch defaultFramebuffer
       [anySPBatch . shaderProgramBatch_ program $
         [

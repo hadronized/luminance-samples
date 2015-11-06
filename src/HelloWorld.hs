@@ -12,10 +12,10 @@ import Graphics.Luminance.Vertex
 import Graphics.UI.GLFW
 
 main :: IO ()
-main = startup $ \window -> do
+main = startup $ \window mainLoop -> do
   triangle <- createGeometry vertices Nothing Triangle
-  program <- sequenceA [createVertexShader vsSource,createFragmentShader fsSource] >>= createProgram_
-  untilM (liftIO $ windowShouldClose window) $ do
+  program <- sequenceA [createStage VertexShader vsSource,createStage FragmentShader fsSource] >>= createProgram_
+  mainLoop $ do
     void . runCmd . draw $ framebufferBatch defaultFramebuffer [anySPBatch $ shaderProgramBatch_ program [stdRenderCmd_ triangle]]
     endFrame window
 

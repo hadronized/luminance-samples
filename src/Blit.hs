@@ -14,13 +14,13 @@ import Graphics.Luminance.Vertex
 import Graphics.UI.GLFW
 
 main :: IO ()
-main = startup $ \window -> do
+main = startup $ \window mainLoop -> do
   triangle <- createGeometry vertices Nothing Triangle
-  vs <- createVertexShader vsSource
-  fs <- createFragmentShader fsSource
+  vs <- createStage VertexShader vsSource
+  fs <- createStage FragmentShader fsSource
   fb :: Framebuffer RW RGBA32F () <- createFramebuffer windowW windowH 1
   program <- createProgram_ [vs,fs]
-  untilM (liftIO $ windowShouldClose window) $ do
+  mainLoop $ do
     _ <- runCmd $ do
       _ <- draw $ framebufferBatch fb 
         [anySPBatch $ shaderProgramBatch_ program [stdRenderCmd_ triangle]]

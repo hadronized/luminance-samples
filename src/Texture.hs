@@ -19,16 +19,16 @@ import Graphics.UI.GLFW
 import System.Environment ( getArgs )
 
 main :: IO ()
-main = startup $ \window -> do
+main = startup $ \window mainLoop -> do
   args <- liftIO getArgs
   when (null args) . throwError $ CLIUsage "expecting a texture path as argument!"
   tex <- loadTexture (head args)
   quad <- createGeometry vertices Nothing Triangle
-  vs <- createVertexShader vsSource
-  fs <- createFragmentShader fsSource
+  vs <- createStage VertexShader vsSource
+  fs <- createStage FragmentShader fsSource
   (program,texU) <- createProgram [vs,fs] $ \uni _ -> do
     uni $ Left "srcTex"
-  untilM (liftIO $ windowShouldClose window) $ do
+  mainLoop $ do
     void . runCmd . draw $ framebufferBatch defaultFramebuffer
       [anySPBatch $ shaderProgramBatch program texU tex [stdRenderCmd_ quad]]
     endFrame window
@@ -59,7 +59,7 @@ fsSource = unlines
   [
     "out vec4 frag;"
 
-  , "layout (bindless_sampler) uniform usampler2D srcTex;"
+  , "uniform usampler2D srcTex;"
 
   , "void main() {"
   , "  vec2 uv = gl_FragCoord.xy;"
