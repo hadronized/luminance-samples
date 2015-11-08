@@ -49,25 +49,24 @@ fsSource = unlines
   [
     "out vec4 frag;"
 
-  , "uniform usampler2D srcTex;"
+  , "uniform sampler2D srcTex;"
 
   , "void main() {"
   , "  vec2 uv = gl_FragCoord.xy;"
   , "  uv.y = " ++ show (windowH :: Int) ++ " - uv.y;"
-  , "  vec3 sampled = vec3(texture(srcTex, uv / vec2(" ++ show (windowW :: Int) ++ "," ++ show (windowH :: Int) ++ "), 0).rgb) / 255;"
-  , "  frag = vec4(sampled, 1.);"
+  , "  frag = texture(srcTex, uv / vec2(" ++ show (windowW :: Int) ++ "," ++ show (windowH :: Int) ++ "), 0);"
   , "}"
   ]
 
-loadTexture :: (MonadError AppError m,MonadIO m,MonadResource m) => String -> m (Texture2D RGBA8UI)
+loadTexture :: (MonadError AppError m,MonadIO m,MonadResource m) => String -> m (Texture2D RGB32F)
 loadTexture path = liftIO (readImage path) >>= either (throwError . TextureLoadFailed) treatDynamicImage
   where
     treatDynamicImage image = case image of
-      ImageRGBA8 img  -> liftIO (putStrLn "ImageRGBA8") >> createTexture_ img
-      ImageYCbCr8 img ->  liftIO (putStrLn "ImageYCbCr8") >> createTexture_ (promoteImage (convertImage img :: Image PixelRGB8))
+      ImageRGBA8 img  -> createTexture_ (promoteImage $ dropAlphaLayer img)
+      ImageYCbCr8 img -> createTexture_ (promoteImage (convertImage img :: Image PixelRGB8))
       _ -> throwError (TextureLoadFailed "unsupported image format")
 
-createTexture_ :: (MonadIO m,MonadResource m) => Image PixelRGBA8 -> m (Texture2D RGBA8UI)
+createTexture_ :: (MonadIO m,MonadResource m) => Image PixelRGBF -> m (Texture2D RGB32F)
 createTexture_ img = do
   let w = fromIntegral $ imageWidth img
       h = fromIntegral $ imageHeight img
