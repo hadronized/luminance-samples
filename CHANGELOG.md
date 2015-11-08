@@ -1,3 +1,9 @@
+# 0.7
+
+- Changed the Texture to use HDR formats.
+- Updated luminance dependency to include the latest version and break compatibility with older
+  versions.
+
 ### 0.6.0.1
 
 - Updated UBO sample to fix issues with Generic.
