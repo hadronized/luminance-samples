@@ -18,7 +18,7 @@ type App = ExceptT AppError (ResourceT IO)
 data AppError
   = AppIncompleteFramebuffer String
   | AppStageCompilationFailed String
-  | AppUnsupportedStage String
+  | AppUnsupportedStage StageType
   | AppProgramLinkFailed String
   | AppInactiveUniform String
   | AppInactiveUniformBlock String
