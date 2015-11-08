@@ -17,8 +17,7 @@ main = startup $ \window mainLoop -> do
   quad <- createGeometry vertices Nothing Triangle
   vs <- createStage VertexShader vsSource
   fs <- createStage FragmentShader fsSource
-  (program,texU) <- createProgram [vs,fs] $ \uni _ -> do
-    uni $ Left "srcTex"
+  (program,texU) <- createProgram [vs,fs] $ \uni _ -> uni $ Left "srcTex"
   mainLoop $ do
     void . runCmd . draw $ framebufferBatch defaultFramebuffer
       [anySPBatch $ shaderProgramBatch program texU tex [stdRenderCmd_ quad]]
