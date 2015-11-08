@@ -5,16 +5,7 @@ import Control.Monad
 import Control.Monad.Except ( MonadError(..) )
 import Control.Monad.IO.Class
 import Control.Monad.Trans.Resource
-import Graphics.Luminance.Batch
-import Graphics.Luminance.Cmd
-import Graphics.Luminance.Framebuffer
-import Graphics.Luminance.Geometry
-import Graphics.Luminance.RenderCmd
-import Graphics.Luminance.Pixel as L
-import Graphics.Luminance.Shader.Program
-import Graphics.Luminance.Shader.Stage
-import Graphics.Luminance.Texture
-import Graphics.Luminance.Vertex
+import Graphics.Luminance
 import Graphics.UI.GLFW
 import System.Environment ( getArgs )
 
