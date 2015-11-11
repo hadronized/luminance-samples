@@ -53,7 +53,6 @@ startup app = do
   windowHint (WindowHint'Resizable False)
   windowHint (WindowHint'ContextVersionMajor 3)
   windowHint (WindowHint'ContextVersionMinor 2)
-  windowHint (WindowHint'OpenGLForwardCompat False)
   windowHint (WindowHint'OpenGLProfile OpenGLProfile'Core)
   window <- createWindow windowW windowH windowTitle Nothing Nothing
   escapeKey <- newIORef False
