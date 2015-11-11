@@ -20,8 +20,7 @@ data AppError
   | AppStageCompilationFailed String
   | AppUnsupportedStage StageType
   | AppProgramLinkFailed String
-  | AppInactiveUniform String
-  | AppInactiveUniformBlock String
+  | AppInactiveUniform SomeUniformName
   | TextureLoadFailed String
   | CLIUsage String
     deriving (Eq,Show)
@@ -37,8 +36,7 @@ instance HasStageError AppError where
 instance HasProgramError AppError where
   fromProgramError e = case e of
     LinkFailed s -> AppProgramLinkFailed s
-    InactiveUniform u -> AppInactiveUniform (show u)
-    InactiveUniformBlock s -> AppInactiveUniformBlock s
+    InactiveUniform name -> AppInactiveUniform name
 
 windowW,windowH :: (Num a) => a
 windowW = 800
@@ -53,7 +51,6 @@ startup app = do
   windowHint (WindowHint'Resizable False)
   windowHint (WindowHint'ContextVersionMajor 3)
   windowHint (WindowHint'ContextVersionMinor 2)
-  windowHint (WindowHint'OpenGLForwardCompat False)
   windowHint (WindowHint'OpenGLProfile OpenGLProfile'Core)
   window <- createWindow windowW windowH windowTitle Nothing Nothing
   escapeKey <- newIORef False

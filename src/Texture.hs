@@ -6,19 +6,18 @@ import Control.Monad.Except ( MonadError(..) )
 import Control.Monad.IO.Class
 import Control.Monad.Trans.Resource
 import Graphics.Luminance
-import Graphics.UI.GLFW
 import System.Environment ( getArgs )
 
 main :: IO ()
-main = startup $ \window mainLoop -> do
+main = startup $ \window loop -> do
   args <- liftIO getArgs
   when (null args) . throwError $ CLIUsage "expecting a texture path as argument!"
   tex <- loadTexture (head args)
   quad <- createGeometry vertices Nothing Triangle
   vs <- createStage VertexShader vsSource
   fs <- createStage FragmentShader fsSource
-  (program,texU) <- createProgram [vs,fs] $ \uni _ -> uni $ Left "srcTex"
-  mainLoop $ do
+  (program,texU) <- createProgram [vs,fs] $ \uni -> uni (UniformName "srcTex")
+  loop $ do
     void . runCmd . draw $ framebufferBatch defaultFramebuffer
       [anySPBatch $ shaderProgramBatch program texU tex [stdRenderCmd_ quad]]
     endFrame window

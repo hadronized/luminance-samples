@@ -1,6 +1,5 @@
 import Common
 import Control.Monad
-import Control.Monad.IO.Class
 import Data.Functor.Contravariant.Divisible
 import Graphics.Luminance.Batch
 import Graphics.Luminance.Cmd
@@ -11,18 +10,17 @@ import Graphics.Luminance.RenderCmd
 import Graphics.Luminance.Shader.Program
 import Graphics.Luminance.Shader.Stage
 import Graphics.Luminance.Vertex
-import Graphics.UI.GLFW
 
 main :: IO ()
-main = startup $ \window mainLoop -> do
+main = startup $ \window loop -> do
   triangle <- createGeometry vertices Nothing Triangle
   vs <- createStage VertexShader vsSource
   fs <- createStage FragmentShader fsSource
-  (program,colorOffsetU) <- createProgram [vs,fs] $ \uni _ -> do
-    colorU <- uni $ Left "color"
-    offsetU <- uni $ Left "offset"
+  (program,colorOffsetU) <- createProgram [vs,fs] $ \uni -> do
+    colorU <- uni (UniformName "color")
+    offsetU <- uni (UniformName "offset")
     pure $ divided colorU offsetU
-  mainLoop $ do
+  loop $ do
     void . runCmd . draw $ framebufferBatch defaultFramebuffer
       [anySPBatch . shaderProgramBatch_ program $
         [

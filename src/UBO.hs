@@ -1,26 +1,24 @@
 import Common
 import Control.Monad
-import Control.Monad.IO.Class
 import GHC.Generics ( Generic )
 import Graphics.Luminance
-import Graphics.UI.GLFW
 import Linear
 
 main :: IO ()
-main = startup $ \window mainLoop -> do
+main = startup $ \window loop -> do
   triangle <- createGeometry vertices Nothing Triangle
   vs <- createStage VertexShader vsSource
   fs <- createStage FragmentShader fsSource
   colorBuffer :: Region RW (UB Color) <- createBuffer (newRegion 3)
   writeWhole colorBuffer (map UB colors)
-  (program,colorsU) <- createProgram [vs,fs] $ \_ uniBlock -> uniBlock "Colors"
-  mainLoop $ do
+  (program,colorsU) <- createProgram [vs,fs] $ \uni -> uni (UniformBlockName"Colors")
+  loop $ do
     void . runCmd . draw $ framebufferBatch defaultFramebuffer [anySPBatch $ shaderProgramBatch program colorsU colorBuffer [stdRenderCmd_ triangle]]
     endFrame window
 
 data Color = Color {
-    colorsRGB :: V3 Float
-  , colorsK   :: Float
+    colorsK   :: Float
+  , colorsRGB :: V3 Float
   } deriving (Eq,Generic,Show)
 
 instance UniformBlock Color where
@@ -30,15 +28,15 @@ colors =
   [
     Color {
       colorsRGB = V3 1 0 0
-    , colorsK = 0.75
+    , colorsK = 1
     }
   , Color {
       colorsRGB = V3 0 1 0
-    , colorsK = 0.3
+    , colorsK = 1
     }
   , Color {
       colorsRGB = V3 0 0 1
-    , colorsK = 0.5
+    , colorsK = 1
     }
   ]
 
@@ -58,8 +56,8 @@ vsSource = unlines
   , "out vec4 vertexColor;"
 
   , "struct Color {"
-  , "  vec3 colorsRGB;"
   , "  float colorsK;"
+  , "  vec3 colorsRGB;"
   , "};"
 
   , "layout (std140) uniform Colors {"

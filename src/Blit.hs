@@ -1,5 +1,4 @@
 import Common
-import Control.Monad.IO.Class
 import Graphics.Luminance.Batch
 import Graphics.Luminance.Cmd
 import Graphics.Luminance.Framebuffer
@@ -11,16 +10,15 @@ import Graphics.Luminance.Shader.Program
 import Graphics.Luminance.Shader.Stage
 import Graphics.Luminance.Texture
 import Graphics.Luminance.Vertex
-import Graphics.UI.GLFW
 
 main :: IO ()
-main = startup $ \window mainLoop -> do
+main = startup $ \window loop -> do
   triangle <- createGeometry vertices Nothing Triangle
   vs <- createStage VertexShader vsSource
   fs <- createStage FragmentShader fsSource
-  fb :: Framebuffer RW RGBA32F () <- createFramebuffer windowW windowH 1
   program <- createProgram_ [vs,fs]
-  mainLoop $ do
+  fb :: Framebuffer RW RGBA32F () <- createFramebuffer windowW windowH 1
+  loop $ do
     _ <- runCmd $ do
       _ <- draw $ framebufferBatch fb 
         [anySPBatch $ shaderProgramBatch_ program [stdRenderCmd_ triangle]]
