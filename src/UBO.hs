@@ -11,7 +11,7 @@ main = startup $ \window loop -> do
   fs <- createStage FragmentShader fsSource
   colorBuffer :: Region RW (UB Color) <- createBuffer (newRegion 3)
   writeWhole colorBuffer (map UB colors)
-  (program,colorsU) <- createProgram [vs,fs] $ \uni -> uni (UniformBlockName"Colors")
+  (program,colorsU) <- createProgram [vs,fs] $ \uni -> uni (UniformBlockName "Colors")
   loop $ do
     void . runCmd . draw $ framebufferBatch defaultFramebuffer [anySPBatch $ shaderProgramBatch program colorsU colorBuffer [stdRenderCmd_ triangle]]
     endFrame window
