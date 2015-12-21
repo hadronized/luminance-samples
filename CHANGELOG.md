@@ -1,3 +1,13 @@
+# 0.9
+
+- Updated luminance dependency to include the latest version and break compatibility with older
+  versions.
+
+# 0.8
+
+- Updated luminance dependency to include the latest version and break compatibility with older
+  versions.
+
 # 0.7
 
 - Changed the Texture to use HDR formats.

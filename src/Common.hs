@@ -50,7 +50,7 @@ startup app = do
   _ <- init
   windowHint (WindowHint'Resizable False)
   windowHint (WindowHint'ContextVersionMajor 3)
-  windowHint (WindowHint'ContextVersionMinor 2)
+  windowHint (WindowHint'ContextVersionMinor 3)
   windowHint (WindowHint'OpenGLProfile OpenGLProfile'Core)
   window <- createWindow windowW windowH windowTitle Nothing Nothing
   escapeKey <- newIORef False
