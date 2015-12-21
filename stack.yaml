@@ -6,9 +6,6 @@ packages:
 
 extra-deps: [linear-1.20.2]
 
-flags:
-  luminance:
-    gl32: true
-    debug-gl: true
+flags: {}
 
 extra-package-dbs: []
