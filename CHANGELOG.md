@@ -1,3 +1,6 @@
+## 0.9.1
+
+- Support for `contravariant-1.4`
 # 0.9
 
 - Updated luminance dependency to include the latest version and break compatibility with older

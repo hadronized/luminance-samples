@@ -4,7 +4,7 @@ packages:
   - '.'
   - '../luminance'
 
-extra-deps: [linear-1.20.2]
+extra-deps: [linear-1.20.2, contravariant-1.4]
 
 flags: {}
 
