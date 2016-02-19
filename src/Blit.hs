@@ -1,15 +1,5 @@
 import Common
-import Graphics.Luminance.Batch
-import Graphics.Luminance.Cmd
-import Graphics.Luminance.Framebuffer
-import Graphics.Luminance.Geometry
-import Graphics.Luminance.RenderCmd
-import Graphics.Luminance.Pixel as L
-import Graphics.Luminance.RW
-import Graphics.Luminance.Shader.Program
-import Graphics.Luminance.Shader.Stage
-import Graphics.Luminance.Texture
-import Graphics.Luminance.Vertex
+import Graphics.Luminance
 
 main :: IO ()
 main = startup $ \window loop -> do
@@ -19,10 +9,9 @@ main = startup $ \window loop -> do
   program <- createProgram_ [vs,fs]
   fb :: Framebuffer RW RGBA32F () <- createFramebuffer windowW windowH 1
   loop $ do
-    _ <- runCmd $ do
-      _ <- draw $ framebufferBatch fb 
-        [anySPBatch $ shaderProgramBatch_ program [stdRenderCmd_ triangle]]
-      blit fb defaultFramebuffer 0 0 windowW windowH 0 0 windowW windowH BlitColor Linear
+    gpuRegion . newFrame fb . newShading (Some program) $ do
+      drawGeometry (stdRenderCmd triangle)
+    framebufferBlit fb defaultFramebuffer 0 0 windowW windowH 0 0 windowW windowH BlitColor Linear
     endFrame window
 
 vertices :: [V 2 Float]

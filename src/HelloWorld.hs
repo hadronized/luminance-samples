@@ -1,5 +1,4 @@
 import Common
-import Control.Monad
 import Graphics.Luminance
 
 main :: IO ()
@@ -7,7 +6,8 @@ main = startup $ \window loop -> do
   triangle <- createGeometry vertices Nothing Triangle
   program <- sequenceA [createStage VertexShader vsSource,createStage FragmentShader fsSource] >>= createProgram_
   loop $ do
-    void . runCmd . draw $ framebufferBatch defaultFramebuffer [anySPBatch $ shaderProgramBatch_ program [stdRenderCmd_ triangle]]
+    gpuRegion . newFrame defaultFramebuffer . newShading (Some program) $
+      drawGeometry (stdRenderCmd triangle)
     endFrame window
 
 vertices :: [V 2 Float]

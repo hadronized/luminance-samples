@@ -16,10 +16,11 @@ main = startup $ \window loop -> do
   quad <- createGeometry vertices Nothing Triangle
   vs <- createStage VertexShader vsSource
   fs <- createStage FragmentShader fsSource
-  (program,texU) <- createProgram [vs,fs] $ \uni -> uni (UniformName "srcTex")
+  program <- createProgram [vs,fs] $ \uni -> uni (UniformName "srcTex")
+  updateUniforms program $ (.= tex)
   loop $ do
-    void . runCmd . draw $ framebufferBatch defaultFramebuffer
-      [anySPBatch $ shaderProgramBatch program texU tex [stdRenderCmd_ quad]]
+    gpuRegion . newFrame defaultFramebuffer . newShading (Some program) $ do
+      drawGeometry (stdRenderCmd quad)
     endFrame window
 
 vertices :: [V 2 Float]

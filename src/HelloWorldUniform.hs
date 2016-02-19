@@ -1,5 +1,4 @@
 import Common
-import Control.Monad
 import Graphics.Luminance
 
 main :: IO ()
@@ -7,10 +6,12 @@ main = startup $ \window loop -> do
   triangle <- createGeometry vertices Nothing Triangle
   vs <- createStage VertexShader vsSource
   fs <- createStage FragmentShader fsSource
-  (program,colorsU :: U [(Float,Float,Float)]) <- createProgram [vs,fs] $ \uni ->
+  program <- createProgram [vs,fs] $ \uni ->
     uni (UniformName "colors")
   loop $ do
-    void . runCmd . draw $ framebufferBatch defaultFramebuffer [anySPBatch $ shaderProgramBatch program colorsU colors [stdRenderCmd_ triangle]]
+    gpuRegion . newFrame defaultFramebuffer . newShading (Some program) $ do
+      updateUniforms program $ (.= colors)
+      drawGeometry (stdRenderCmd triangle)
     endFrame window
 
 colors :: [(Float,Float,Float)]
@@ -49,7 +50,6 @@ fsSource = unlines
   [
     "in vec4 vertexColor;"
   , "out vec4 frag;"
-
 
   , "void main() {"
   , "  frag = vertexColor;"

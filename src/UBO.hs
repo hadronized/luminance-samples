@@ -1,5 +1,4 @@
 import Common
-import Control.Monad
 import GHC.Generics ( Generic )
 import Graphics.Luminance
 import Linear
@@ -9,11 +8,13 @@ main = startup $ \window loop -> do
   triangle <- createGeometry vertices Nothing Triangle
   vs <- createStage VertexShader vsSource
   fs <- createStage FragmentShader fsSource
-  colorBuffer :: Region RW (UB Color) <- createBuffer (newRegion 3)
+  colorBuffer :: Buffer RW (UB Color) <- createBuffer (newRegion 3)
   writeWhole colorBuffer (map UB colors)
-  (program,colorsU) <- createProgram [vs,fs] $ \uni -> uni (UniformBlockName "Colors")
+  program <- createProgram [vs,fs] $ \uni -> uni (UniformBlockName "Colors")
+  updateUniforms program $ (.= colorBuffer)
   loop $ do
-    void . runCmd . draw $ framebufferBatch defaultFramebuffer [anySPBatch $ shaderProgramBatch program colorsU colorBuffer [stdRenderCmd_ triangle]]
+    gpuRegion . newFrame defaultFramebuffer . newShading (Some program) $
+      drawGeometry (stdRenderCmd triangle)
     endFrame window
 
 data Color = Color {

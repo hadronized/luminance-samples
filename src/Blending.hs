@@ -1,45 +1,40 @@
 import Common
-import Control.Monad
-import Data.Functor.Contravariant.Divisible
-import Graphics.Luminance.Batch
-import Graphics.Luminance.Cmd
-import Graphics.Luminance.Blending
-import Graphics.Luminance.Framebuffer
-import Graphics.Luminance.Geometry
-import Graphics.Luminance.RenderCmd
-import Graphics.Luminance.Shader.Program
-import Graphics.Luminance.Shader.Stage
-import Graphics.Luminance.Vertex
+import Data.Foldable ( for_ )
+import Graphics.Luminance
 
 main :: IO ()
 main = startup $ \window loop -> do
   triangle <- createGeometry vertices Nothing Triangle
   vs <- createStage VertexShader vsSource
   fs <- createStage FragmentShader fsSource
-  (program,colorOffsetU) <- createProgram [vs,fs] $ \uni -> do
+  program <- createProgram [vs,fs] $ \uni -> do
     colorU <- uni (UniformName "color")
     offsetU <- uni (UniformName "offset")
-    pure $ divided colorU offsetU
+    pure (colorU,offsetU)
   loop $ do
-    void . runCmd . draw $ framebufferBatch defaultFramebuffer
-      [anySPBatch . shaderProgramBatch_ program $
-        [
-          renderCmd blending False colorOffsetU (color0,offset0) triangle 
-        , renderCmd blending False colorOffsetU (color1,offset1) triangle 
-        , renderCmd blending False colorOffsetU (color2,offset2) triangle 
-        ]
-      ]
+    gpuRegion . newFrame defaultFramebuffer . newShading (Some program) $ do
+      for_ (zip colors offsets) $ \(color,offset) -> do
+        updateUniforms program $ \(colorU,offsetU) ->
+             colorU .= color
+          <> offsetU .= offset
+        drawGeometry (renderCmd blending False triangle )
     endFrame window
 
-color0,color1,color2 :: (Float,Float,Float)
-color0 = (1,0,0)
-color1 = (0,1,0)
-color2 = (0,0,1)
+colors :: [(Float,Float,Float)]
+colors =
+  [
+    (1,0,0)
+  , (0,1,0)
+  , (0,0,1)
+  ]
 
-offset0,offset1,offset2 :: (Float,Float)
-offset0 = (-0.25,0)
-offset1 = (0.25,0)
-offset2 = (0,0.25)
+offsets :: [(Float,Float)]
+offsets = 
+  [
+    (-0.25,0)
+  , (0.25,0)
+  , (0,0.25)
+  ]
 
 vertices :: [V 2 Float]
 vertices =
