@@ -12,9 +12,9 @@ main = startup $ \window loop -> do
     offsetU <- uni (UniformName "offset")
     pure (colorU,offsetU)
   loop $ do
-    gpuRegion . newFrame defaultFramebuffer . newShading (Some program) $ do
+    gpuRegion . newFrame defaultFramebuffer . newShading program $ \updateUniforms -> do
       for_ (zip colors offsets) $ \(color,offset) -> do
-        updateUniforms program $ \(colorU,offsetU) ->
+        updateUniforms $ \(colorU,offsetU) ->
              colorU .= color
           <> offsetU .= offset
         drawGeometry (renderCmd blending False triangle )

@@ -9,8 +9,8 @@ main = startup $ \window loop -> do
   program <- createProgram [vs,fs] $ \uni ->
     uni (UniformName "colors")
   loop $ do
-    gpuRegion . newFrame defaultFramebuffer . newShading (Some program) $ do
-      updateUniforms program $ (.= colors)
+    gpuRegion . newFrame defaultFramebuffer . newShading program $ \updateUniforms -> do
+      updateUniforms (.= colors)
       drawGeometry (stdRenderCmd triangle)
     endFrame window
 

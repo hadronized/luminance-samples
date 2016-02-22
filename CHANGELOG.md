@@ -1,3 +1,8 @@
+## 0.11
+
+- Updated luminance dependency to include the latest version and break compatibility with older
+  versions.
+
 ## 0.10
 
 - Updated luminance dependency to include the latest version and break compatibility with older
