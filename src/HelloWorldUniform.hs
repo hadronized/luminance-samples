@@ -8,10 +8,9 @@ main = startup $ \window loop -> do
   fs <- createStage FragmentShader fsSource
   program <- createProgram [vs,fs] $ \uni ->
     uni (UniformName "colors")
+  updateUniforms program (.= colors)
   loop $ do
-    gpuRegion . newFrame defaultFramebuffer . newShading program $ \updateUniforms -> do
-      updateUniforms (.= colors)
-      drawGeometry (stdRenderCmd triangle)
+    _ <- draw $ defaultFrameCmd [ShadingCmd program mempty [pureDraw $ stdRenderCmd triangle]]
     endFrame window
 
 colors :: [(Float,Float,Float)]
