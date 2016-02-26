@@ -1,5 +1,4 @@
 import Common
-import Data.Foldable ( for_ )
 import Graphics.Luminance
 
 main :: IO ()
@@ -12,12 +11,8 @@ main = startup $ \window loop -> do
     offsetU <- uni (UniformName "offset")
     pure (colorU,offsetU)
   loop $ do
-    gpuRegion . newFrame defaultFramebuffer . newShading program $ \updateUniforms -> do
-      for_ (zip colors offsets) $ \(color,offset) -> do
-        updateUniforms $ \(colorU,offsetU) ->
-             colorU .= color
-          <> offsetU .= offset
-        drawGeometry (renderCmd Nothing True triangle )
+    let cmd color offset = updateAndDraw (\(colorU,offsetU) -> colorU .= color <> offsetU .= offset) (stdRenderCmd triangle)
+    _ <- draw $ defaultFrameCmd [ShadingCmd program mempty (zipWith cmd colors offsets)]
     endFrame window
 
 colors :: [(Float,Float,Float)]
