@@ -6,7 +6,7 @@ main = startup $ \window loop -> do
   triangle <- createGeometry vertices Nothing Triangle
   program <- sequenceA [createStage VertexShader vsSource,createStage FragmentShader fsSource] >>= createProgram_
   loop $ do
-    gpuRegion . newFrame defaultFramebuffer . newShading program . const $ drawGeometry (stdRenderCmd triangle)
+    _ <- draw $ defaultFrameCmd [ShadingCmd program mempty [pureDraw (stdRenderCmd triangle)]]
     endFrame window
 
 vertices :: [V 2 Float]
