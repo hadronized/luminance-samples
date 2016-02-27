@@ -17,10 +17,9 @@ main = startup $ \window loop -> do
   vs <- createStage VertexShader vsSource
   fs <- createStage FragmentShader fsSource
   program <- createProgram [vs,fs] $ \uni -> uni (UniformName "srcTex")
+  updateUniforms program (.= tex)
   loop $ do
-    gpuRegion . newFrame defaultFramebuffer . newShading program $ \updateUniforms -> do
-      updateUniforms (.= tex)
-      drawGeometry (stdRenderCmd quad)
+    _ <- draw $ defaultFrameCmd [ShadingCmd program mempty [pureDraw (stdRenderCmd quad)]]
     endFrame window
 
 vertices :: [V 2 Float]
