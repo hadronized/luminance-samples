@@ -9,8 +9,7 @@ main = startup $ \window loop -> do
   program <- createProgram_ [vs,fs]
   fb :: Framebuffer RW RGBA32F () <- createFramebuffer windowW windowH 1
   loop $ do
-    gpuRegion . newFrame fb . newShading program . const $ do
-      drawGeometry (stdRenderCmd triangle)
+    _ <- draw $ FrameCmd fb [ShadingCmd program mempty [pureDraw (stdRenderCmd triangle)]]
     framebufferBlit fb defaultFramebuffer 0 0 windowW windowH 0 0 windowW windowH BlitColor Linear
     endFrame window
 
