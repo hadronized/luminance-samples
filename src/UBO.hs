@@ -11,10 +11,9 @@ main = startup $ \window loop -> do
   colorBuffer :: Buffer RW (UB Color) <- createBuffer (newRegion 3)
   writeWhole colorBuffer (map UB colors)
   program <- createProgram [vs,fs] $ \uni -> uni (UniformBlockName "Colors")
+  updateUniforms program (.= colorBuffer)
   loop $ do
-    gpuRegion . newFrame defaultFramebuffer . newShading program $ \updateUniforms -> do
-      updateUniforms (.= colorBuffer)
-      drawGeometry (stdRenderCmd triangle)
+    _ <- draw $ defaultFrameCmd [ShadingCmd program mempty [pureDraw (stdRenderCmd triangle)]]
     endFrame window
 
 data Color = Color {
